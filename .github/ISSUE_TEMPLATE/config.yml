@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 통합 이슈 등록
+    url: https://github.com/SaSiaing/backend/issues/new/choose
+    about: 앱 작업과 버그도 backend 리포의 통합 이슈에서 관리합니다.
