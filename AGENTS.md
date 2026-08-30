@@ -1,10 +1,10 @@
-# app — 작업 규약
+# 가족 가계부 — 작업 규약
 
-가족 가계부 Flutter 앱. 가족 구성원이 각자 지출·수입을 기록하고,
-우리 집 돈이 어디로 얼마나 나가는지 함께 확인합니다.
+가족 구성원이 각자 지출·수입을 기록하고 우리 집 돈이 어디로 얼마나 나가는지
+함께 확인하는 Flutter 앱과 Go API 서버입니다.
 
-**규약의 원본은 [backend/AGENTS.md](https://github.com/SaSiaing/backend/blob/main/AGENTS.md) 입니다.**
-아래는 그 사본입니다. 규칙을 고칠 때는 backend에서 고치고 `make sync-conventions`로 복사하세요.
+**규약의 원본은 backend 리포의 이 파일입니다.** Codex가 자동으로 읽습니다.
+app 리포에는 `make sync-conventions`로 같은 파일과 규칙 하네스를 복사합니다.
 
 ## 저장소
 
@@ -87,7 +87,26 @@ chore: golangci-lint 1.62 업데이트
 - **입력 마찰을 줄이는 게 최우선.** 목표는 앱 아이콘 탭부터 저장 완료까지 **10초**.
 - **과거 날짜 입력이 일상입니다.** 날짜 변경이 번거로우면 앱을 안 씁니다.
 
-## 이 리포 전용
+## backend 전용
+
+```
+cmd/api/          엔트리포인트
+internal/handler/ Echo 핸들러
+internal/service/ 도메인 로직
+internal/repo/    DB 접근 (sqlc 생성 코드 래핑)
+db/migrations/    goose
+query/            sqlc 입력
+docs/             api.md, plan.md
+```
+
+- **이 리포는 public입니다.** `.env`, 서비스 계정 키, OAuth 클라이언트 시크릿을 절대 커밋하지 마세요.
+  `.gitignore`가 `.env*`를 막고 있지만 `git add -f`로 뚫립니다.
+- 안 쓰는 import는 **컴파일 에러**입니다. `organizeImports`를 켜두세요.
+- 도메인 에러(`ErrNotFound` / `ErrForbidden` / `ErrConflict`)를 정의하고 `errors.Is`로 분기합니다.
+  HTTP 상태 매핑은 `e.HTTPErrorHandler` 한 곳에서만 합니다.
+- 500 에러는 `slog`로 로깅하되 클라이언트에는 상세를 숨깁니다.
+
+## app 전용
 
 ```
 lib/core/       Dio 클라이언트, 라우팅, 테마, 공용 위젯
