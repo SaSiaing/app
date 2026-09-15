@@ -1,16 +1,44 @@
-# env
+# Miscellaneous
+*.class
+*.log
+*.pyc
+*.swp
+.DS_Store
+.atom/
+.build/
+.buildlog/
+.history
+.svn/
+.swiftpm/
+migrate_working_dir/
+
+# IntelliJ / Android Studio
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# Environment
 .env
 .env.*
 !.env.example
 
 # Flutter / Dart
+**/doc/api/
+**/ios/Flutter/.last_build_id
 .dart_tool/
 .packages
-build/
 .flutter-plugins
 .flutter-plugins-dependencies
+.pub-cache/
+.pub/
+build/
+/coverage/
 *.g.dart
 *.freezed.dart
+app.*.symbols
+app.*.map.json
+.widget_preview/
 
 # iOS
 ios/Pods/
@@ -23,7 +51,8 @@ android/.gradle/
 android/local.properties
 android/key.properties
 android/app/google-services.json
+/android/app/debug
+/android/app/profile
+/android/app/release
 *.jks
 *.keystore
-
-.DS_Store
