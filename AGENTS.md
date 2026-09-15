@@ -1,10 +1,10 @@
-# app — 작업 규약
+# 가족 가계부 — 작업 규약
 
-가족 가계부 Flutter 앱. 가족 구성원이 각자 지출·수입을 기록하고,
-우리 집 돈이 어디로 얼마나 나가는지 함께 확인합니다.
+가족 구성원이 각자 지출·수입을 기록하고 우리 집 돈이 어디로 얼마나 나가는지
+함께 확인하는 Flutter 앱과 Go API 서버입니다.
 
-**규약의 원본은 [backend/AGENTS.md](https://github.com/SaSiaing/backend/blob/main/AGENTS.md) 입니다.**
-아래는 그 사본입니다. 규칙을 고칠 때는 backend에서 고치고 `make sync-conventions`로 복사하세요.
+**규약의 원본은 backend 리포의 이 파일입니다.** Codex가 자동으로 읽습니다.
+app 리포에는 `make sync-conventions`로 같은 파일과 규칙 하네스를 복사합니다.
 
 ## 저장소
 
@@ -25,15 +25,19 @@
 - **dev / stage 브랜치는 만들지 않습니다.** MVP 기간에는 `main` 하나로 갑니다.
 - 이름: `<type>/<이슈번호>-<요약>`
 
-```
+```text
 feat/21-transaction-create
 fix/24-past-date-reset
 refactor/07-repo-interface
 ```
 
+- 브랜치 번호는 `[04]` 같은 계획 ID가 아니라 **GitHub가 부여한 실제 이슈 번호**를 씁니다.
+- 이슈는 backend 리포에 모읍니다. app PR에서는 `SaSiaing/backend#번호`로 연결합니다.
+- 원칙은 이슈 하나에 브랜치·PR 하나입니다. 여러 작업을 묶으면 상위 이슈에 체크리스트로 관리합니다.
+
 ## 커밋
 
-```
+```text
 <type>(<scope>): <설명> (#이슈번호)
 ```
 
@@ -52,7 +56,7 @@ type은 **난이도가 아니라 의도**로 고릅니다. 질문 하나로 갈�
 scope는 **선택**입니다. 리포가 나뉘어 있어서 `(server)` `(app)` 같은 건 의미가 없습니다.
 쓸 거면 리포 안의 영역으로: `(auth)` `(db)` `(chart)` `(ci)`.
 
-```
+```text
 feat: 내역 등록 엔드포인트 추가 (#21)
 fix(auth): 세션 토큰 만료 처리 (#14)
 refactor: repo 인터페이스로 service 의존성 분리 (#07)
@@ -62,6 +66,14 @@ chore: golangci-lint 1.62 업데이트
 이 규약은 `.githooks/commit-msg`가 강제합니다. 클론 직후 `make hooks` (backend는 `make dev`)를
 한 번 돌려야 활성화됩니다 — git hook은 클론마다 수동 설정이 필요합니다.
 
+## 이슈·PR
+
+- 새 작업과 버그는 backend의 이슈 폼으로 등록합니다. app에는 별도 이슈를 만들지 않습니다.
+- PR 제목은 커밋과 같은 `<type>(<scope>): <설명>` 형식을 씁니다.
+- PR 본문에 실제 이슈를 연결합니다. 계획 ID만 적지 않습니다.
+- 템플릿의 항목을 지우지 말고 해당 없으면 이유를 적습니다.
+- `.github/workflows/pr-metadata.yml`이 PR 제목과 이슈 연결을 검사합니다.
+
 ## 공통 규칙
 
 - **금액은 정수(엔).** 문자열로 다루지 않고, 부동소수점을 쓰지 않습니다. DB는 `BIGINT`.
@@ -69,7 +81,7 @@ chore: golangci-lint 1.62 업데이트
 - **집계는 `occurred_at` 기준.** `created_at`이 아닙니다 — 어제 쓴 걸 오늘 넣는 게 일상입니다.
 - 삭제는 soft delete (`deleted_at`). 조회는 항상 `deleted_at IS NULL`.
 - 에러 응답은 `{ "message": "...", "code": "..." }` 하나로 통일합니다.
-- **API를 바꿀 때는 `backend/docs/api.md`를 먼저 고칩니다.** 코드부터 바꾸지 않습니다.
+- **API를 바꿀 때는 [backend의 `docs/api.md`](https://github.com/SaSiaing/backend/blob/main/docs/api.md)를 먼저 고칩니다.** 코드부터 바꾸지 않습니다.
 
 ## 범위 밖 — 구현하지 않습니다
 
@@ -87,9 +99,28 @@ chore: golangci-lint 1.62 업데이트
 - **입력 마찰을 줄이는 게 최우선.** 목표는 앱 아이콘 탭부터 저장 완료까지 **10초**.
 - **과거 날짜 입력이 일상입니다.** 날짜 변경이 번거로우면 앱을 안 씁니다.
 
-## 이 리포 전용
+## backend 전용
 
+```text
+cmd/api/          엔트리포인트
+internal/handler/ Echo 핸들러
+internal/service/ 도메인 로직
+internal/repo/    DB 접근 (sqlc 생성 코드 래핑)
+db/migrations/    goose
+query/            sqlc 입력
+docs/             api.md, plan.md
 ```
+
+- **이 리포는 public입니다.** `.env`, 서비스 계정 키, OAuth 클라이언트 시크릿을 절대 커밋하지 마세요.
+  `.gitignore`가 `.env*`를 막고 있지만 `git add -f`로 뚫립니다.
+- 안 쓰는 import는 **컴파일 에러**입니다. `organizeImports`를 켜두세요.
+- 도메인 에러(`ErrNotFound` / `ErrForbidden` / `ErrConflict`)를 정의하고 `errors.Is`로 분기합니다.
+  HTTP 상태 매핑은 `e.HTTPErrorHandler` 한 곳에서만 합니다.
+- 500 에러는 `slog`로 로깅하되 클라이언트에는 상세를 숨깁니다.
+
+## app 전용
+
+```text
 lib/core/       Dio 클라이언트, 라우팅, 테마, 공용 위젯
 lib/features/   화면별 (auth / household / transaction / summary / settings)
 ```
