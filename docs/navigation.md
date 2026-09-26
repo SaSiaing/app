@@ -50,20 +50,6 @@
 `transaction_screen.dart`, `TransactionScreen`으로 연결합니다. 상세 경로를 추가할
 때도 최상위 경로 이름을 그대로 확장합니다.
 
-### 구조도
-
-![가족 가계부 네비게이션 구조](images/navigation-structure.png)
-
-구조도의 수정 가능한 원본은
-[`diagrams/navigation-structure.dot`](diagrams/navigation-structure.dot)입니다.
-
-구조도를 수정한 뒤 저장소 루트에서 다음 명령으로 이미지를 다시 생성합니다.
-
-```sh
-dot -Tpng docs/diagrams/navigation-structure.dot \
-  -o docs/images/navigation-structure.png
-```
-
 ### 구현
 
 - `MaterialApp.router`를 앱 진입점으로 사용합니다.
@@ -130,11 +116,6 @@ dot -Tpng docs/diagrams/navigation-structure.dot \
 - **네비게이션 구조를 수정할 때는 이 문서를 먼저 수정한 뒤 코드를 변경합니다.**
 - 최상위 경로의 첫 구간, `lib/features`의 기능 폴더, 라우트 상수와 화면 이름은
   같은 기능 이름을 사용합니다.
-- 네비게이션 구조를 변경할 때는 경로 표와
-  `diagrams/navigation-structure.dot`을 먼저 수정하고,
-  `images/navigation-structure.png`를 다시 생성한 뒤 코드를 변경합니다.
-- 구조도 원본과 이미지가 현재 경로 및 탭 구성과 다르면 네비게이션 변경이 완료된
-  것으로 간주하지 않습니다.
 - 경로, 탭 구성, 라우트 계층, 상태 유지 방식, 뒤로 가기, 딥링크 동작을 바꾸는
   작업에는 모두 이 규칙을 적용합니다.
 - 문서에 반영되지 않은 네비게이션 구조 변경은 확정된 정책으로 간주하지 않습니다.
