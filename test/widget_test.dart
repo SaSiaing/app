@@ -1,30 +1,43 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
 import 'package:sapasi/main.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  testWidgets('앱 진입 시 홈 화면을 표시한다', (tester) async {
+    await tester.pumpWidget(const MainApp());
+    await tester.pumpAndSettle();
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    expect(find.text('홈 화면'), findsOneWidget);
+  });
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+  testWidgets('하단 탭을 선택하면 해당 화면으로 이동한다', (tester) async {
+    await tester.pumpWidget(const MainApp());
+    await tester.pumpAndSettle();
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    const destinations = {
+      '내역': '내역 화면',
+      '예산': '예산 화면',
+      '통계': '통계 화면',
+      '설정': '설정 화면',
+      '홈': '홈 화면',
+    };
+
+    for (final destination in destinations.entries) {
+      await tester.tap(find.text(destination.key));
+      await tester.pumpAndSettle();
+
+      expect(find.text(destination.value), findsOneWidget);
+    }
+  });
+
+  testWidgets('화면과 하단 내비게이션 배경에 흰색을 사용한다', (tester) async {
+    await tester.pumpWidget(const MainApp());
+    await tester.pumpAndSettle();
+
+    final context = tester.element(find.byType(Scaffold));
+    final theme = Theme.of(context);
+
+    expect(theme.scaffoldBackgroundColor, Colors.white);
+    expect(theme.navigationBarTheme.backgroundColor, Colors.white);
   });
 }
